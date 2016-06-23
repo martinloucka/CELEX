@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Vyjimka pro _ soubory
+RewriteRule ^_(.*) - [L]
+
+RewriteRule ^$ www/ [L]
+RewriteRule (.*) www/$1 [L]

@@ -1,0 +1,26 @@
+{* Homepage with initial form *}
+
+{block content}
+<div class="row" style="margin-top:100px;">
+	<!-- Form -->
+	<div class="col-md-12">
+		<div class="col-md-8 center-block" style="float:none">
+			<div class="formy well">
+				<!-- Title -->
+				<h4 class="title">Please specify your query</h4>
+				<div class="form">
+					{form rechercheForm, class => 'form-horizontal'}
+					{$form}
+					{/form}
+				</div> 
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	jQuery(function($){
+		$.mask.definitions['x'] = '[0-9]';
+		$("#frm-rechercheForm-input").mask("Směrnice 9999 / 9?999");
+	});
+</script>
+{/block}

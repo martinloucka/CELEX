@@ -1,0 +1,52 @@
+{*
+	Main html file for research output
+*}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<!-- Title here -->
+		<title>European case law research</title>
+		<!-- Description, Keywords and Author -->
+		<meta name="author" content="Martin Loučka">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		{include 'layout/headLinks.latte'}
+	</head>
+
+	<body>
+
+		<!-- Header starts -->
+		<header>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-6 col-sm-6">
+						<div class="logo">
+							<h1><a href="{$baseUri}"><span class="color bold">European</span> case law research</a></h1>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6">
+
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- Seperator -->
+		<div class="sep"></div>
+		<!--/ Header ends -->
+
+		<div class="content">
+			<div class="container">
+				{include content}
+			</div>
+		</div>
+
+		<!-- Scroll to top -->
+		<span class="totop"><a href="#"><i class="fa fa-chevron-up"></i></a></span> 
+		<a href="#" class="totop btn btn-lg btn-primary btn-flat dark" data-toggle="modal" data-target="#modalContactForm">Leave feedback</a>
+
+		{include 'modalContactForm.latte'}
+		
+		{include 'layout/scripts.latte'}
+	</body>	
+</html>

@@ -1,0 +1,42 @@
+<div id="modalContactForm" class="modal fade in" tabindex="-1" role="dialog" style="display: none;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">Leave your feedback</h4>
+			</div>
+			<div class="modal-body">
+			{form contactForm, class => 'myform', id => 'mycomment'}
+				<div class="row clearfix">
+					<div class="col-xs-12 col-sm-6">
+						<div class="form-group">
+							<label class="control-label">Name</label>
+							<div class="controls">
+								<input n:name="from_name" placeholder="Full name" class="form-control input-lg requiredField" type="text" data-error-empty="Please enter your name">
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-6">
+						<div class="form-group">
+							<label class="control-label">E-mail</label>
+							<div class=" controls">
+								<input n:name="from_email" placeholder="E-mail address" class="form-control input-lg requiredField" type="email" data-error-invalid="Invalid address" data-error-empty="Please enter your e-mail address">
+							</div>
+						</div>
+					</div>	
+				</div>	
+				<div class="form-group">
+					<label class="control-label">Message</label>
+					<div class="controls">
+						<textarea n:name="text" placeholder="Message" class="form-control input-lg requiredField" rows="5" data-error-empty="Message may not be empty"></textarea>
+					</div>
+				</div>
+				<p><input n:name="send" class="btn btn-success btn-block" data-error-message="Error!" data-sending-message="Sending..." data-ok-message="Feedback sent"></p>
+			{/form}
+			</div> <!-- / .modal-body -->
+			<div class="modal-footer">
+				{ifset $modalDismiss}<button type="button" class="btn btn-flat btn-success" data-dismiss="modal">Cancel</button>{/ifset}
+			</div>
+		</div> <!-- / .modal-content -->
+	</div> <!-- / .modal-dialog -->
+</div>

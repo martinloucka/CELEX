@@ -1,0 +1,429 @@
+{*
+	This file is used to 
+	(1) present research results, and 
+	(2) perform many subsequent AJAX operations
+*}
+{layout '@layout_recherche.latte'}
+{block content}
+<div class="row">
+	<div class="col-md-12">
+		<h1>Research output for &ndash; <a href="http://eur-lex.europa.eu/legal-content/CS/LKD/?uri=CELEX:{$rechercheDataCelex}" target="_blank">{$rechercheDataCelex}</a></h1>
+		<div class="well">
+			<p>{$rechercheDataTitle}</p>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<h2>Linked case law</h2>
+	</div>
+</div>
+
+
+{* 
+ *
+ * Here we print HTML of data fetched from XML:
+ * (later we enhance and complete them with additional data get by AJAX)
+ * ---------------------------------------------------------------------
+ *
+ *}
+ 
+{* note:  we print the list one-by-one by types because each type has different handling method 
+ * later this shall be solved by dedicated presenting method in HomePresenter.php that shall accept research raw data 
+ * and make them more suitable for this latte presentation *}
+
+{* CNs table *}
+{if !is_array($rechercheDataArray['CN'])}{? $rechercheDataArray['CN'] = array()}{/if}
+<div n:foreach="$rechercheDataArray['CN'] as $itemId => $itemData" id="{$itemId}" class="row rechercheItem">
+	<div class="col-md-12">
+		<div class="col-md-4 alert alert-success type-cn">
+			<p>
+				<b>Reference</b>
+			</p>
+			<p class="celex-id" id="celex-id-{$itemData['identifier']}">
+				{$itemData['identifier']}
+			</p>
+			<p>
+				<a href="{$itemData['uri']}" target="_blank">Full text</a>
+			</p>
+		</div>
+		<div class="col-md-4 alert alert-success type-cc" n:if="isset($rechercheDataArray['CC'][$itemId])">
+			<p>
+				<b>AG's opinion</b>
+			</p>
+			<p>
+				{$rechercheDataArray['CC'][$itemId]['identifier']}
+			</p>
+			<p>
+				<a href="{$rechercheDataArray['CC'][$itemId]['uri']}" target="_blank">Full text</a>
+			</p>			
+		</div>
+		<div class="col-md-4 well type-cc {if true || isset($rechercheDataArray['CJ'][$itemId])}load_cc{/if}" id="load_cc_6{str_replace('-','CC',$itemId)}" data-celex="6{str_replace('-','CC',$itemId)}" n:if="!isset($rechercheDataArray['CC'][$itemId])">
+			<p>
+				<b>AG's opinion</b>
+			</p>
+			{if isset($rechercheDataArray['CJ'][$itemId])}
+				<p>
+					<i class="fa fa-refresh fa-spin"></i> Loading
+				</p>
+				<p>
+					<i><a target="_blank" href="http://publications.europa.eu/resource/celex/6{str_replace('-','CC',$itemId)}">(Try it now)</a></i>
+				</p>
+			{else}
+				<p>
+					<i>Document not available.</i>
+				</p>
+				<p>
+					<i><a target="_blank" href="http://publications.europa.eu/resource/celex/6{str_replace('-','CC',$itemId)}">(Try CELEX)</a></i>
+				</p>
+			{/if}
+		</div>
+		<div class="col-md-4 alert alert-success type-cj" n:if="isset($rechercheDataArray['CJ'][$itemId])">
+			<p>
+				<b>Judgment</b>
+			</p>
+			<p>
+				{$rechercheDataArray['CJ'][$itemId]['identifier']}
+			</p>
+			<p>
+				<a href="{$rechercheDataArray['CJ'][$itemId]['uri']}" target="_blank">Full text</a>
+			</p>
+		</div>
+		<div class="col-md-4 alert alert-success type-co" n:if="isset($rechercheDataArray['CO'][$itemId])">
+			<p>
+				<b>Order</b>
+			</p>
+			<p>
+				{$rechercheDataArray['CO'][$itemId]['identifier']}
+			</p>
+			<p>
+				<a href="{$rechercheDataArray['CO'][$itemId]['uri']}" target="_blank">Full text</a>
+			</p>
+		</div>
+		<div class="col-md-4 well load_cj" data-celex="6{str_replace('-','CJ',$itemId)}" n:if="!isset($rechercheDataArray['CO'][$itemId]) && !isset($rechercheDataArray['CJ'][$itemId])">
+			<p>
+				<b>Decision</b>
+			</p>
+			<p>
+				<i class="fa fa-refresh fa-spin"></i> Loading
+			</p>
+			<p>
+				<i><a target="_blank" href="http://publications.europa.eu/resource/celex/6{str_replace('-','CJ',$itemId)}">(Try it now)</a></i>
+			</p>
+		</div>
+	</div>
+</div>
+
+{* CJs table *}
+{var $CJCNdiff = @array_diff_key($rechercheDataArray['CJ'], $rechercheDataArray['CN'])}
+{if !is_array($CJCNdiff)}{? $CJCNdiff = array()}{/if}
+<div class="row" n:if="count($CJCNdiff) == 0">{* no data message? *}</div>
+<div n:foreach="$CJCNdiff as $itemId => $itemData" id="{$itemId}" class="row rechercheItem">
+	<div class="col-md-12">
+		<div class="col-md-4 alert alert-success type-cn load_cn" data-celex="6{str_replace('-','CN',$itemId)}">
+			<p>
+				<b>Reference</b>
+			</p>
+			<p class="celex-id" id="celex-id-6{str_replace('-','CN',$itemId)}">
+				6{str_replace('-','CN',$itemId)}
+			</p>
+			<p>
+				<a href="http://publications.europa.eu/resource/celex/6{str_replace('-','CN',$itemId)}" target="_blank">Full text</a>
+			</p>
+		</div>
+		<div class="col-md-4 alert alert-success type-cc" n:if="isset($rechercheDataArray['CC'][$itemId])">
+			<p>
+				<b>AG's opinion</b>
+			</p>
+			<p>
+				{$rechercheDataArray['CC'][$itemId]['identifier']}
+			</p>
+			<p>
+				<a href="{$rechercheDataArray['CC'][$itemId]['uri']}" target="_blank">Full text</a>
+			</p>
+		</div>
+		<div class="col-md-4 well load_cc type-cc" id="load_cc_6{str_replace('-','CC',$itemId)}" data-celex="6{str_replace('-','CC',$itemId)}" n:if="!isset($rechercheDataArray['CC'][$itemId])">
+			<p>
+				<b>AG's opinion</b>
+			</p>
+			<p>
+				<i class="fa fa-refresh fa-spin"></i> Loading
+			</p>
+			<p>
+				<i><a target="_blank" href="http://publications.europa.eu/resource/celex/6{str_replace('-','CC',$itemId)}">(Try it now)</a></i>
+			</p>
+		</div>
+		<div class="col-md-4 alert alert-success type-cj">
+			<p>
+				<b>Judgment</b>
+			</p>
+			<p>
+				{$rechercheDataArray['CJ'][$itemId]['identifier']}
+			</p>
+			<p>
+				<a href="{$rechercheDataArray['CJ'][$itemId]['uri']}" target="_blank">Full text</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+{* COs table *}
+{var $COCNdiff = @array_diff_key($rechercheDataArray['CO'], $rechercheDataArray['CN'])}
+{if !is_array($COCNdiff)}{? $COCNdiff = array()}{/if}
+<div class="row" n:if="count($COCNdiff) == 0">{* no data message? *}</div>
+<div n:foreach="$COCNdiff as $itemId => $itemData" id="{$itemId}" class="row rechercheItem">
+	<div class="col-md-12">
+		<div class="col-md-4 alert alert-success type-cn load_cn" data-celex="6{str_replace('-','CN',$itemId)}">
+			<p>
+				<b>Reference</b>
+			</p>
+			<p class="celex-id" id="celex-id-6{str_replace('-','CN',$itemId)}">
+				6{str_replace('-','CN',$itemId)}
+			</p>
+			<p>
+				<a href="http://publications.europa.eu/resource/celex/6{str_replace('-','CN',$itemId)}" target="_blank">Full text</a>
+			</p>
+		</div>
+		<div class="col-md-4 alert alert-danger type-cc">
+			<p>
+				<b>AG's opinion</b>
+			</p>
+			<p>
+				Document not available.
+			</p>
+			<p>
+				<a target="_blank" href="http://publications.europa.eu/resource/celex/6{str_replace('-','CC',$itemId)}"><i>(Try CELEX)</i></a>
+			</p>
+		</div>
+		<div class="col-md-4 alert alert-success type-co">
+			<p>
+				<b>Order</b>
+			</p>
+			<p>
+				{$rechercheDataArray['CO'][$itemId]['identifier']}
+			</p>
+			<p>
+				<a href="{$rechercheDataArray['CO'][$itemId]['uri']}" target="_blank">Full text</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+{* national implementating legislative acts shall be implemented here *}
+
+
+{* 
+ *
+ * AJAX and other JS stuff: 
+ * ------------------------
+ *
+ *}
+			
+<script>
+	// global var storing IDs of joined cases already handled
+	var joinedCasesDone = [];
+
+	// auto-run function 
+	// handles existence-check of CJs and COs
+	$('.load_cj').each(function() {
+		var celex = $(this).attr('data-celex');
+		var thisTmp = $(this);
+		$.ajax({
+			type: "get",
+			url: "_client.ajax.php?cache=" + celex + "&url=http://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX:" + celex + "&process",
+			success: function(data) {
+				// show what we got
+				if ( data == "BLOCKED" ) {
+					// if request was blocked by the server (not in use right now as the new function returns just response codes)
+					$(thisTmp).removeClass('load_cj').removeClass('well').addClass('alert alert-warning');
+					$(thisTmp).html("<p><b>Judgment</b></p><p><b><i>Unreachable</i></b></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>(Try CELEX)</a></p>");
+				} else if ( data == "404" ) {
+					// document not found
+					$(thisTmp).removeClass('load_cj').removeClass('well').addClass('alert alert-danger');
+					$(thisTmp).html("<p><b>Judgment</b></p><p><i>Document not available</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+				} else if ( data == "200" ) {
+					// document found
+					$(thisTmp).removeClass('load_cj').removeClass('well').addClass('alert alert-success');
+					$(thisTmp).html("<p><b>Judgment</b></p><p>" + celex + "</p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>Full text</a></p>");
+				}
+                
+				// if document does not exist, let's see whether at least 'CO' type is available
+                if ( data == "BLOCKED" || data == "404" ) {
+                    celex = celex.replace('CJ','CO');
+                    $.ajax({
+                        type: "get",
+                        url: "_client.ajax.php?cache=" + celex + "&url=http://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX:" + celex + "&process",
+                        success: function(data) {
+                            if ( data == "BLOCKED" ) {
+                                $(thisTmp).removeClass('load_co').removeClass('well').addClass('alert alert-warning');
+                                $(thisTmp).html("<p><b>Decision</b></p><p><b><i>Unreachable</i></b></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>(Try CELEX)</a></p>");
+                            } else if ( data == "404" ) {
+                                $(thisTmp).removeClass('load_co').removeClass('well').addClass('alert alert-danger');
+                                $(thisTmp).html("<p><b>Decision</b></p><p><i>Document not available</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+                            } else if ( data == "200" ) {
+                                $(thisTmp).removeClass('load_co').removeClass('well').addClass('alert alert-success');
+                                $(thisTmp).html("<p><b>Order</b></p><p>" + celex + "</p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>Full text</a></p>");
+                            }
+                        },
+                        error: function() {
+                            $(thisTmp).removeClass('load_cc').removeClass('well').addClass('alert alert-warning');
+                            $(thisTmp).html("<p><b>Decision</b></p><p><i>Connection error</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+                        }
+                    });
+                }
+			},
+			error: function() {
+				$(thisTmp).removeClass('load_cj').removeClass('well').addClass('alert alert-warning');
+				$(thisTmp).html("<p><b>Judgment</b></p><p><i>Connection error</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+			}
+		});
+	});
+    
+	// auto-run function 
+	// handles existence-check of COs directly
+	$('.load_co').each(function() {
+		var celex = $(this).attr('data-celex');
+		var thisTmp = $(this);
+		$.ajax({
+			type: "get",
+			url: "_client.ajax.php?cache=" + celex + "&url=http://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX:" + celex + "&process",
+			success: function(data) {
+				if ( data == "BLOCKED" ) {
+					$(thisTmp).removeClass('load_co').removeClass('well').addClass('alert alert-warning');
+					$(thisTmp).html("<p><b>Order</b></p><p><b><i>Unreachable</i></b></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>(Try CELEX)</a></p>");
+				} else if ( data == "404" ) {
+					$(thisTmp).removeClass('load_co').removeClass('well').addClass('alert alert-danger');
+					$(thisTmp).html("<p><b>Order</b></p><p><i>Document not available</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+				} else if ( data == "200" ) {
+					$(thisTmp).removeClass('load_co').removeClass('well').addClass('alert alert-success');
+					$(thisTmp).html("<p><b>Order</b></p><p>" + celex + "</p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>Full text</a></p>");
+				}
+			},
+			error: function() {
+				$(thisTmp).removeClass('load_cc').removeClass('well').addClass('alert alert-warning');
+				$(thisTmp).html("<p><b>Order</b></p><p><i>Connection error</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+			}
+		});
+	});
+    
+	// auto-run function 
+	// handles existence-check of CCs
+	$('.load_cc').each(function() {
+		var celex = $(this).attr('data-celex');
+		var thisTmp = $(this);
+		$.ajax({
+			type: "get",
+			url: "_client.ajax.php?cache=" + celex + "&url=http://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX:" + celex + "&process",
+			success: function(data) {
+				if ( data == "BLOCKED" ) {
+					$(thisTmp).removeClass('load_cc').removeClass('well').addClass('alert alert-warning');
+					$(thisTmp).html("<p><b>AG's opinion</b></p><p><b><i>Unreachable</i></b></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>(Try CELEX)</a></p>");
+				} else if ( data == "404" ) {
+					$(thisTmp).removeClass('load_cc').removeClass('well').addClass('alert alert-danger');
+					$(thisTmp).html("<p><b>AG's opinion</b></p><p><i>Document not available</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+				} else if ( data == "200" ) {
+					$(thisTmp).removeClass('load_cc').removeClass('well').addClass('alert alert-success');
+					$(thisTmp).html("<p><b>AG's opinion</b></p><p>" + celex + "</p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>Full text</a></p>");
+				}
+			
+				processJoinedCases($(thisTmp));
+			},
+			error: function() {
+				$(thisTmp).removeClass('load_cc').removeClass('well').addClass('alert alert-warning');
+				$(thisTmp).html("<p><b>AG's opinion</b></p><p><i>Connection error</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+			}
+		});
+	});
+
+	// auto-run function 
+	// handles existence-check of CNs
+	$('.load_cn').each(function() {
+		var celex = $(this).attr('data-celex');
+		var thisTmp = $(this);
+		$.ajax({
+			type: "get",
+			url: "_client.ajax.php?cache=" + celex + "&url=http://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX:" + celex + "&process",
+			success: function(data) {
+				if ( data == "BLOCKED" ) {
+					$(thisTmp).removeClass('load_cn').removeClass('well').addClass('alert alert-warning');
+					$(thisTmp).html("<p><b>Reference</b></p><p><b><i>Unreachable</i></b></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>(Try CELEX)</a></p>");
+				} else if ( data == "404" ) {
+					$(thisTmp).removeClass('load_cn').removeClass('well').addClass('alert alert-danger');
+					$(thisTmp).html("<p><b>Reference</b></p><p><i>Document not available</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+				} else if ( data == "200" ) {
+					$(thisTmp).removeClass('load_cn').removeClass('well').addClass('alert alert-success');
+					$(thisTmp).html("<p><b>Reference</b></p><p>" + celex + "</p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'>Full text</a></p>");
+				}
+			
+				processJoinedCases($(thisTmp));
+			},
+			error: function() {
+				$(thisTmp).removeClass('load_cc').removeClass('well').addClass('alert alert-warning');
+				$(thisTmp).html("<p><b>AG's opinion</b></p><p><i>Connection error</i></p><p><a href='http://publications.europa.eu/resource/celex/" + celex + "' target='_blank'><i>(Try CELEX)</i></a></p>");
+			}
+		});
+	});
+
+	// function that (1) fetches popular case name and (2) gets list of cases joined to given celex number (n:1)
+	function processJoinedCases(obj) {
+		// parent.parent.id is YYYY-NNNN (not celex format); this is for easier transformation between types (replace suffices)
+		var celex = 'X' + $(obj).parent().parent().attr('id').replace('-','XX');
+		
+		// check whether action is still necessary
+		if ( joinedCasesDone.indexOf(celex) >= 0 ) {
+			return false;
+		}
+		
+		// if we continue, set as processed
+		joinedCasesDone.push(celex);
+		
+		// fire ajax request and handle the response (see /_findJoined.php for details on how response looks like)
+		// response: <popular case name>[|joined cases separated by comma]
+		$.ajax({
+			type: "get",
+			url: "_findJoined.php?celex=" + celex,
+			success: function(data) {
+				if ( data.indexOf('|') < 0 ) {
+					// no pipe, no joined cass; we have only case name to display properly
+					$(obj).parent().find('div').css('margin-top', '0px');
+					$(obj).parent().prepend('<div class="well col-md-12 alert-default" style="position:relative;top:+10px;"><p>'+data+'</p></div>');
+				} else {
+					// data = case name|joined,joined* (joined* => document reachable - 200 OK)
+					// in following lines 
+					// (1) popular case name will be displayed, 
+					// (2) joined cases divided by commas and then 
+					// (3) displayed, reflecting whether they have been reached (*), or not
+					var dataJoined = data.split('|')[1];
+					var dataName = data.split('|')[0];
+					var dataJoinedHtml = '';
+					var arrJoined = dataJoined.split(',');
+					var classSuccess = 'success';
+					var classIcon = 'check-square-o';
+					$(obj).parent().find('div').css('margin-top', '0px');
+					$(obj).parent().prepend('<div class="well col-md-12 alert-default" style="position:relative;top:+10px;"><p>'+dataName+'</p></div>');
+					arrJoined.forEach(function(element) {
+						if(element === '') {} else {
+							if ( element.indexOf('*') >= 0 ) {
+								classSuccess = 'success';
+								classIcon = 'check-square';
+							} else {
+								classSuccess = 'danger';
+								classIcon = 'times-circle'
+							}
+							dataJoinedHtml = '<a href="http://publications.europa.eu/resource/celex/' + element + '" target="_blank">'+element+'</a>, ';
+							$(obj).parent().find('div').css('margin-bottom', '0px');
+							
+							// add element that states which case has been joined to given celex
+							$(obj).parent().append('<div class="load_joined_cc well col-md-12 alert alert-' + classSuccess + '" style="position:relative;top:-10px;"><p><i class="fa fa-' + classIcon + '"></i> Joined case: <span class="celex">'+dataJoinedHtml.replace(',','').replace('\*','')+'</span></p></div>');
+							
+							// and hide that joined case (will not appear to user anymore)
+							$('#celex-id-'+element).parent().parent().hide();
+						}
+					});
+				}
+			}
+		});
+	}
+</script>
+{/block}

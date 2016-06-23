@@ -1,0 +1,101 @@
+{* 
+	Main html file used for all pages except research output.
+*}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<!-- Title here -->
+		<title>European case law research</title>
+		<!-- Description, Keywords and Author -->
+		<meta name="author" content="Martin Loučka">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		{include 'layout/headLinks.latte'}
+	</head>
+
+	<body>
+
+		<!-- Header starts -->
+		<header>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-6 col-sm-6">
+						<div class="logo">
+							<h1><a href="{$baseUri}"><span class="color bold">European</span> case law research</a></h1>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6">
+						<!-- Navigation -->
+						<div class="navbar bs-docs-nav" role="banner">
+							<div class="navbar-header">
+								<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+									<span class="sr-only">Toggle navigation</span>
+								</button>
+							</div>
+
+							<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+								<ul class="nav navbar-nav navbar-right">
+									<li><a href="//eur-lex.europa.eu">EUR-Lex</a></li>
+								</ul>
+							</nav>
+						</div>
+						<!--/ Navigation end -->
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- Seperator -->
+		<div class="sep"></div>
+		<!--/ Header ends -->
+
+		<!-- Page content starts -->
+
+		<div class="content">
+			<div class="container">
+			{ifset $flashes}
+				<div class="container-fluid title">
+					<div class="row">
+						<div class="col-sm-12">
+							<div n:foreach="$flashes as $flash" n:class="alert, flash, $flash->type">{$flash->message}</div>
+						</div>
+					</div>
+				</div>
+			{/ifset}
+			
+			{include content}
+			</div>
+		</div>
+
+		<!-- Page content ends -->
+
+		<!-- Footer starts -->
+		<footer style="position:absolute;bottom:0px;width:100%;box-sizing: border-box">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+
+						<div class="row">
+
+						</div>
+
+						<hr />
+						<!-- Copyright info -->
+						<p class="copy">Copyright &copy; 2016, Jakub Harašta and Martin Loučka</p>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</footer> 	
+
+		<!-- Footer ends -->
+
+		<!-- Scroll to top -->
+		<span class="totop"><a href="#"><i class="fa fa-chevron-up"></i></a></span> 
+		<a href="#" class="totop btn btn-lg btn-primary btn-flat dark" data-toggle="modal" data-target="#modalContactForm">Leave feedback</a>
+		
+		{include 'modalContactForm.latte'}
+
+		{include 'layout/scripts.latte'}
+	</body>	
+</html>
